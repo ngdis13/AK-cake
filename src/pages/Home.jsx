@@ -1,16 +1,18 @@
 import React from 'react';
+
 import { useEffect, useState } from 'react';
 
 import Sort from '../components/Sort.jsx';
 import Categories from '../components/Categories.jsx';
 import CakeBlock from '../components/CakeBlock/index.jsx';
 import Skeleton from '../components/CakeBlock/Skeleton.jsx';
+import Pagination from '../components/Pagination/index.jsx';
 
-const Home = () => {
+const Home = ({ searchValue }) => {
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  const [categoryId, setCategoryId] = useState(0); 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [categoryId, setCategoryId] = useState(0);
   const [sortType, setSortType] = useState({
     name: 'популярности',
     sortProperty: 'rating',
@@ -21,10 +23,10 @@ const Home = () => {
 
     const category = categoryId > 0 ? `categoryID=${categoryId}&` : '';
     const sortBy = sortType.sortProperty.replace('-', '');
-    const order = sortType.sortProperty.includes('-')? 'asc': 'desc';
+    const order = sortType.sortProperty.includes('-') ? 'asc' : 'desc';
+    const search = searchValue ? `&search=${searchValue}` : '';
 
-
-    let url = `https://6836b7ad664e72d28e41cd1f.mockapi.io/Items?${category}&sortBy=${sortBy}&order=${order}`;
+    let url = `https://6836b7ad664e72d28e41cd1f.mockapi.io/Items?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}${search}`;
 
     fetch(url)
       .then((res) => res.json())
@@ -33,7 +35,12 @@ const Home = () => {
         setIsLoading(false);
       });
     window.scrollTo(0, 0);
-  }, [categoryId, sortType]);
+  }, [categoryId, sortType, searchValue, currentPage]);
+
+  const cakes = items.map((obj) => <CakeBlock key={obj.id} {...obj} />);
+  const skeletons = [...new Array(8)].map((_, index) => (
+    <Skeleton key={index} />
+  ));
 
   return (
     <div className="container">
@@ -45,11 +52,8 @@ const Home = () => {
         <Sort sortType={sortType} onClickSort={(obj) => setSortType(obj)} />
       </div>
       <h2 className="content__title">Все торты</h2>
-      <div className="content__items">
-        {isLoading
-          ? [...new Array(8)].map((_, index) => <Skeleton key={index} />)
-          : items.map((obj) => <CakeBlock key={obj.id} {...obj} />)}
-      </div>
+      <div className="content__items">{isLoading ? skeletons : cakes}</div>
+      <Pagination onChangePage={(number) => setCurrentPage(number)}/>
     </div>
   );
 };

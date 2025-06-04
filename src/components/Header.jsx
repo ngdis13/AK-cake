@@ -16,7 +16,7 @@ function Header() {
           </div>
         </Link>
         
-        <Search/>
+        <Search />
 
         <Link to="/cart">
           <div className="header__cart">
