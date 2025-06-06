@@ -2,6 +2,7 @@ import { useState, createContext } from 'react';
 
 import './scss/app.scss';
 
+
 import Header from './components/Header.jsx';
 import Home from './pages/Home.jsx';
 import Cart from './pages/Cart.jsx';

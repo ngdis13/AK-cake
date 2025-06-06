@@ -1,10 +1,10 @@
 import styles from './Search.module.scss';
 import closeIcon from '../../assets/close-icon.svg';
 import { useContext } from 'react';
-import {SearchContext} from '../../App'
+import { SearchContext } from '../../App';
 
 const Search = () => {
-  const {searchValue, setSearchValue} = useContext(SearchContext)
+  const { searchValue, setSearchValue } = useContext(SearchContext);
 
   return (
     <div className={styles.root}>
@@ -29,7 +29,12 @@ const Search = () => {
         placeholder="Поиск"
       />
       {searchValue && (
-        <img className={styles.clearIcon} src={closeIcon} onClick={() => setSearchValue('')} alt="" />
+        <img
+          className={styles.clearIcon}
+          src={closeIcon}
+          onClick={() => setSearchValue('')}
+          alt=""
+        />
       )}
     </div>
   );
