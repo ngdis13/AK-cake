@@ -2,28 +2,36 @@ import { useEffect, useState } from 'react';
 import typesOfCategory from '../../assets/types.json';
 import { useDispatch, useSelector } from 'react-redux';
 
-function CakeBlock({id, title, category, imageUrl, types, price }) {
+import { addItem } from '../../redux/slices/cartSlice';
+
+function CakeBlock({ id, title, category, imageUrl, types, price }) {
+  const dispatch = useDispatch();
+  const cartItem = useSelector((state) =>
+    state.cart.items.find((obj) => obj.id === id)
+  );
   const [activeType, setActiveType] = useState(0);
   const [allTypesData, setAllTypesData] = useState(null);
 
+  const addedCount = cartItem ? cartItem.count : 0;
+
   const onClickAdd = () => {
-    const obj = {
-      id, 
-      title, 
+    const item = {
+      id,
+      title,
       price,
       imageUrl,
-      type: activeType,
-      size: active
+      type: typesOfCategory[activeType],
     };
-  }
+    dispatch(addItem(item));
+  };
 
   useEffect(() => {
     const url = `https://6836b7ad664e72d28e41cd1f.mockapi.io/types`;
     fetch(url)
       .then((res) => res.json())
       .then((data) => setAllTypesData(data))
-      .catch(error => {
-        console.error('Error fetching types data:', error)
+      .catch((error) => {
+        console.error('Error fetching types data:', error);
       });
   }, []);
 
@@ -48,7 +56,10 @@ function CakeBlock({id, title, category, imageUrl, types, price }) {
       </div>
       <div className="cake-block__bottom">
         <div className="cake-block__price">от {price} ₽</div>
-        <button className="button button--outline button--add">
+        <button
+          className="button button--outline button--add"
+          onClick={onClickAdd}
+        >
           <svg
             width="12"
             height="12"
@@ -62,7 +73,7 @@ function CakeBlock({id, title, category, imageUrl, types, price }) {
             />
           </svg>
           <span>Добавить</span>
-          <i className="button__count">0</i>
+          {addedCount > 0 && <i className="button__count">{addedCount}</i>}
         </button>
       </div>
     </div>
