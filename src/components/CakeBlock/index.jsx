@@ -1,9 +1,21 @@
 import { useEffect, useState } from 'react';
 import typesOfCategory from '../../assets/types.json';
+import { useDispatch, useSelector } from 'react-redux';
 
-function CakeBlock({ title, category, imageUrl, types, price }) {
+function CakeBlock({id, title, category, imageUrl, types, price }) {
   const [activeType, setActiveType] = useState(0);
   const [allTypesData, setAllTypesData] = useState(null);
+
+  const onClickAdd = () => {
+    const obj = {
+      id, 
+      title, 
+      price,
+      imageUrl,
+      type: activeType,
+      size: active
+    };
+  }
 
   useEffect(() => {
     const url = `https://6836b7ad664e72d28e41cd1f.mockapi.io/types`;
