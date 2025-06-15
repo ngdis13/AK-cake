@@ -20,7 +20,7 @@ function CakeBlock({ id, title, category, imageUrl, types, price }) {
       title,
       price,
       imageUrl,
-      type: typesOfCategory[activeType],
+      type: types[activeType],
     };
     dispatch(addItem(item));
   };
