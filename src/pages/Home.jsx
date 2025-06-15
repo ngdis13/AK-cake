@@ -16,6 +16,7 @@ import {
   setCurrentPage,
   setFilters,
 } from '../redux/slices/filterSlice.js';
+import { setItems, fetchCakes } from '../redux/slices/cakeSlice.js';
 
 const Home = ({ searchValue }) => {
   const navigate = useNavigate();
@@ -26,9 +27,9 @@ const Home = ({ searchValue }) => {
   const { categoryId, sort, currentPage } = useSelector(
     (state) => state.filter
   );
-  const sortType = sort.sortProperty;
 
-  const [items, setItems] = useState([]);
+  const sortType = sort.sortProperty;
+  const items = useSelector((state) => state.cake.items);
   const [isLoading, setIsLoading] = useState(true);
 
   const onClickCategory = (id) => {
@@ -39,7 +40,7 @@ const Home = ({ searchValue }) => {
     dispatch(setCurrentPage(number));
   };
 
-  const fetchCakes = () => {
+  const fetchCakes = async () => {
     setIsLoading(true);
 
     const category = categoryId > 0 ? `categoryID=${categoryId}&` : '';
@@ -48,7 +49,7 @@ const Home = ({ searchValue }) => {
     const search = searchValue ? `&search=${searchValue}` : '';
 
     let url = `https://6836b7ad664e72d28e41cd1f.mockapi.io/Items?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}${search}`;
-    axios
+    await axios
       .get(url)
       .then((response) => {
         if (!Array.isArray(response.data)) {
@@ -56,9 +57,9 @@ const Home = ({ searchValue }) => {
             'API returned data that is not an array:',
             response.data
           );
-          setItems([]);
+          dispatch(setItems([]));
         } else {
-          setItems(response.data);
+          dispatch(setItems(response.data));
         }
         setIsLoading(false);
       })
@@ -67,7 +68,7 @@ const Home = ({ searchValue }) => {
         if (err.response) {
           console.warn(`HTTP Error! status: ${err.response.status}`);
         }
-        setItems([]);
+        dispatch(setItems([]));
         setIsLoading(false);
       });
   };
