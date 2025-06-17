@@ -16,7 +16,7 @@ import {
   setCurrentPage,
   setFilters,
 } from '../redux/slices/filterSlice.js';
-import { setItems, fetchCakes } from '../redux/slices/cakeSlice.js';
+import { fetchCakes } from '../redux/slices/cakeSlice.js';
 
 const Home = ({ searchValue }) => {
   const navigate = useNavigate();
@@ -29,8 +29,7 @@ const Home = ({ searchValue }) => {
   );
 
   const sortType = sort.sortProperty;
-  const items = useSelector((state) => state.cake.items);
-  const [isLoading, setIsLoading] = useState(true);
+  const { items, status } = useSelector((state) => state.cake);
 
   const onClickCategory = (id) => {
     dispatch(setCategoryId(id));
@@ -38,39 +37,6 @@ const Home = ({ searchValue }) => {
 
   const onChangePage = (number) => {
     dispatch(setCurrentPage(number));
-  };
-
-  const fetchCakes = async () => {
-    setIsLoading(true);
-
-    const category = categoryId > 0 ? `categoryID=${categoryId}&` : '';
-    const sortBy = sortType.replace('-', '');
-    const order = sortType.includes('-') ? 'asc' : 'desc';
-    const search = searchValue ? `&search=${searchValue}` : '';
-
-    let url = `https://6836b7ad664e72d28e41cd1f.mockapi.io/Items?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}${search}`;
-    await axios
-      .get(url)
-      .then((response) => {
-        if (!Array.isArray(response.data)) {
-          console.error(
-            'API returned data that is not an array:',
-            response.data
-          );
-          dispatch(setItems([]));
-        } else {
-          dispatch(setItems(response.data));
-        }
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.error('Error loading cakes:', err);
-        if (err.response) {
-          console.warn(`HTTP Error! status: ${err.response.status}`);
-        }
-        dispatch(setItems([]));
-        setIsLoading(false);
-      });
   };
 
   //Если был первый рендер, то проверяем URL параметры и сохраняем в редуксе
@@ -85,17 +51,16 @@ const Home = ({ searchValue }) => {
         console.warn('Invalid sort property:', params.sortProperty);
       }
     }
-  }, []);
+  }, [dispatch]);
 
   //Если был первый рендер то запрашиваем тортики
   useEffect(() => {
     window.scrollTo(0, 0);
-
     if (!isSearch.current) {
-      fetchCakes();
+      dispatch(fetchCakes({ categoryId, sortType, searchValue, currentPage }));
     }
     isSearch.current = false;
-  }, [categoryId, sortType, searchValue, currentPage]);
+  }, [categoryId, sortType, searchValue, currentPage, dispatch]);
 
   //Если изменили параметры и был первый рендер
   useEffect(() => {
@@ -123,7 +88,21 @@ const Home = ({ searchValue }) => {
         <Sort />
       </div>
       <h2 className="content__title">Все торты</h2>
-      <div className="content__items">{isLoading ? skeletons : cakes}</div>
+      {status === 'error' ? (
+        <div className='content__error-info'>
+          <h2>
+            Произошла ошибка<icon>😕</icon>
+          </h2>
+          <p>
+            Не удалось получить тортики. Попробуйте повторить попытку позже
+          </p>
+        </div>
+      ) : (
+        <div className="content__items">
+          {status === 'loading' ? skeletons : cakes}
+        </div>
+      )}
+
       <Pagination currentPage={currentPage} onChangePage={onChangePage} />
     </div>
   );

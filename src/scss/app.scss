@@ -37,6 +37,22 @@ body {
     grid-row-gap: 20px;
   }
 
+  &__error-info {
+    margin: 100px auto;
+    width: 400px;
+    text-align: center;
+
+    h2{
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    p{
+      font-size: 20px;
+    }
+  }
+
   &__top {
     display: flex;
     align-items: center;
