@@ -12,6 +12,7 @@ export const fetchCakes = createAsyncThunk(
     const url = `https://6836b7ad664e72d28e41cd1f.mockapi.io/Items?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}${search}`;
     const response = await axios.get(url);
 
+
     if (!Array.isArray(response.data)) {
       console.error('API returned data that is not an array:', response.data);
       return [];
@@ -50,6 +51,9 @@ const cakesSlice = createSlice({
       });
   },
 });
+
+
+export const selectCakeData = (state) => state.cake;
 
 export const { setItems } = cakesSlice.actions;
 

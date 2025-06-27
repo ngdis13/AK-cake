@@ -12,24 +12,25 @@ import CakeBlock from '../components/CakeBlock/index.jsx';
 import Skeleton from '../components/CakeBlock/Skeleton.jsx';
 import Pagination from '../components/Pagination/index.jsx';
 import {
+  selectFilter,
   setCategoryId,
   setCurrentPage,
   setFilters,
 } from '../redux/slices/filterSlice.js';
-import { fetchCakes } from '../redux/slices/cakeSlice.js';
+import { fetchCakes, selectCakeData } from '../redux/slices/cakeSlice.js';
 
-const Home = ({ searchValue }) => {
+const Home = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isSearch = useRef(false);
   const isMounted = useRef(false);
 
-  const { categoryId, sort, currentPage } = useSelector(
-    (state) => state.filter
+  const { categoryId, sort, currentPage, searchValue } = useSelector(
+    selectFilter
   );
 
   const sortType = sort.sortProperty;
-  const { items, status } = useSelector((state) => state.cake);
+  const { items, status } = useSelector(selectCakeData);
 
   const onClickCategory = (id) => {
     dispatch(setCategoryId(id));
