@@ -4,7 +4,17 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { addItem,  selectCartItemById } from '../../redux/slices/cartSlice';
 
-function CakeBlock({ id, title, category, imageUrl, types, price }) {
+type CakeBlockProps = {
+  id: string;
+  title: string; 
+  category: string;
+  imageUrl: string; 
+  types: string;
+  price: number;
+}
+
+
+const CakeBlock: React.FC<CakeBlockProps>= ({ id, title, category, imageUrl, types, price }) => {
   const dispatch = useDispatch();
   const cartItem = useSelector(selectCartItemById(id));
   const [activeType, setActiveType] = useState(0);

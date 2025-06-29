@@ -1,0 +1,58 @@
+@import '../variables';
+
+.cake-content {
+    display: flex;
+    width: 100%;
+    gap: 20px;
+    position: relative;
+    &__image-block {
+        flex: 1;
+        img {
+            width: 100%;
+            height: auto;
+            object-fit:cover;
+        }
+    }
+
+    &__info-block {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        gap: 16px;
+    }
+
+
+
+}
+
+.info-block {
+
+    &__cake-name{
+        font-size: 40px;
+        font-weight: 700;
+        line-height: 110%;
+    }
+    &__cake-description{
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 24px;
+    }
+    &__cake-compound{
+    }
+
+}
+
+.added-block{
+    &__cake-price{
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        font-size: 32px;
+    }
+    &__cake-added {
+        position: absolute;
+        bottom: 0;
+        right: 100px;
+        margin-right: 16px;
+    }
+}

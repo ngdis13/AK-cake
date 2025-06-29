@@ -1,6 +1,6 @@
 import NotFoundBlock from '../components/NotFoundBlock/index'
 
-const NotFound = () => {
+const NotFound: React.FC = () => {
     return (
         <>
             <NotFoundBlock/>

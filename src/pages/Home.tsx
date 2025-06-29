@@ -4,13 +4,13 @@ import qs from 'qs';
 
 import { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-import Sort, { list } from '../components/Sort.jsx';
-import Categories from '../components/Categories.jsx';
-import CakeBlock from '../components/CakeBlock/index.jsx';
-import Skeleton from '../components/CakeBlock/Skeleton.jsx';
-import Pagination from '../components/Pagination/index.jsx';
+import Sort, { list } from '../components/Sort.js';
+import Categories from '../components/Categories.js';
+import CakeBlock from '../components/CakeBlock/index.js';
+import Skeleton from '../components/CakeBlock/Skeleton.js';
+import Pagination from '../components/Pagination/index.js';
 import {
   selectFilter,
   setCategoryId,
@@ -19,7 +19,7 @@ import {
 } from '../redux/slices/filterSlice.js';
 import { fetchCakes, selectCakeData } from '../redux/slices/cakeSlice.js';
 
-const Home = () => {
+const Home: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isSearch = useRef(false);
@@ -32,12 +32,12 @@ const Home = () => {
   const sortType = sort.sortProperty;
   const { items, status } = useSelector(selectCakeData);
 
-  const onClickCategory = (id) => {
+  const onClickCategory = (id: number) => {
     dispatch(setCategoryId(id));
   };
 
-  const onChangePage = (number) => {
-    dispatch(setCurrentPage(number));
+  const onChangePage = (page: number) => {
+    dispatch(setCurrentPage(page));
   };
 
   //Если был первый рендер, то проверяем URL параметры и сохраняем в редуксе
@@ -77,7 +77,7 @@ const Home = () => {
     isMounted.current = true;
   }, [categoryId, sortType, currentPage]);
 
-  const cakes = items.map((obj) => <CakeBlock key={obj.id} {...obj} />);
+  const cakes = items.map((obj) => <Link key={obj.id} to={`/cake/${obj.id}`}><CakeBlock {...obj} /></Link>);
   const skeletons = [...new Array(8)].map((_, index) => (
     <Skeleton key={index} />
   ));
@@ -92,7 +92,7 @@ const Home = () => {
       {status === 'error' ? (
         <div className='content__error-info'>
           <h2>
-            Произошла ошибка<icon>😕</icon>
+            Произошла ошибка<span>😕</span>
           </h2>
           <p>
             Не удалось получить тортики. Попробуйте повторить попытку позже
