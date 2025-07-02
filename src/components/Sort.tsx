@@ -2,9 +2,17 @@ import { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectSort, setSort } from '../redux/slices/filterSlice.ts';
 
+
+enum SortPropertyEnum {
+  RATING = 'rating',
+  PRICE_DESC = 'price',
+  PRICE_ASC = '-price',
+  TITLE= 'title',
+}
+
 type SortItem = {
   name: string;
-  sortProperty: string;
+  sortProperty: SortPropertyEnum;
 };
 
 
@@ -12,20 +20,20 @@ type SortItem = {
 export const list: SortItem[] = [
   {
     name: 'популярности',
-    sortProperty: 'rating',
+    sortProperty: SortPropertyEnum.RATING,
   },
 
   {
     name: 'цене по убыванию',
-    sortProperty: 'price',
+    sortProperty: SortPropertyEnum.PRICE_DESC,
   },
   {
     name: 'цене по возрастанию',
-    sortProperty: '-price',
+    sortProperty: SortPropertyEnum.PRICE_ASC,  
   },
   {
     name: 'алфавиту',
-    sortProperty: 'title',
+    sortProperty: SortPropertyEnum.TITLE,
   },
 ];
 

@@ -1,10 +1,10 @@
 import React from 'react';
-import axios from 'axios';
 import qs from 'qs';
 
 import { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../redux/store.ts';
 
 import Sort, { list } from '../components/Sort.js';
 import Categories from '../components/Categories.js';
@@ -21,7 +21,7 @@ import { fetchCakes, selectCakeData } from '../redux/slices/cakeSlice.ts';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const isSearch = useRef(false);
   const isMounted = useRef(false);
 
@@ -43,7 +43,7 @@ const Home: React.FC = () => {
   //Если был первый рендер, то проверяем URL параметры и сохраняем в редуксе
   useEffect(() => {
     if (window.location.search) {
-      const params = qs.parse(window.location.search.substring(1));
+      const params = qs.parse(window.location.search.substring(1) as unknown);
       const sort = list.find((obj) => obj.sortProperty === params.sortProperty);
       if (sort) {
         dispatch(setFilters({ ...params, sort }));

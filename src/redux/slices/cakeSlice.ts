@@ -3,6 +3,12 @@ import type { RootState } from '../store';
 import CartItem from '../../pages/CartItem';
 import axios from 'axios';
 
+export enum Status {
+  LOADING= 'loading',
+  SUCCESS = 'success',
+  ERROR = 'error',
+}
+
 export type CartItem = {
   id: string;
   title: string; 
@@ -14,12 +20,12 @@ export type CartItem = {
 
 interface CakeSliceState {
   items: CartItem[];
-  status: 'loading' | 'success' | 'error';
+  status: Status;
 }
 
 const initialState: CakeSliceState = {
   items: [],
-  status: 'loading',
+  status: Status.LOADING,
 };
 
 type FetchCakesArgs = {
@@ -61,15 +67,15 @@ const cakesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchCakes.pending, (state) => {
-        state.status = 'loading';
+        state.status = Status.LOADING;
         state.items = [];
       })
       .addCase(fetchCakes.fulfilled, (state, action) => {
         state.items = action.payload;
-        state.status = 'success';
+        state.status = Status.SUCCESS;
       })
       .addCase(fetchCakes.rejected, (state) => {
-        state.status = 'error';
+        state.status = Status.ERROR;
         state.items = [];
       });
   },
