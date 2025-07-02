@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import typesOfCategory from '../assets/types.json';
-import { addItem, selectCartItemById } from '../redux/slices/cartSlice';
+import { addItem, selectCartItemById } from '../redux/slices/cartSlice.ts';
 
 const FullCakes: React.FC = () => {
     const [cake, setCake] = useState<{

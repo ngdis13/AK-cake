@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import typesOfCategory from '../../assets/types.json';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { addItem,  selectCartItemById } from '../../redux/slices/cartSlice';
+import { addItem,  selectCartItemById } from '../../redux/slices/cartSlice.ts';
+import type { CartItem } from '../../redux/slices/cakeSlice.ts';
 
 type CakeBlockProps = {
   id: string;
@@ -23,12 +24,13 @@ const CakeBlock: React.FC<CakeBlockProps>= ({ id, title, category, imageUrl, typ
   const addedCount = cartItem ? cartItem.count : 0;
 
   const onClickAdd = () => {
-    const item = {
+    const item: CartItem = {
       id,
       title,
       price,
       imageUrl,
-      type: typesOfCategory[activeType]
+      type: typesOfCategory[activeType],
+      count: 0,
     };
     dispatch(addItem(item));
   };

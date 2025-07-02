@@ -9,4 +9,6 @@ export const store = configureStore({
     cart,
     cake
   }
-}) 
+});
+
+export type RootState = ReturnType<typeof store.getState>;

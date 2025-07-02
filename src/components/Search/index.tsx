@@ -3,7 +3,7 @@ import closeIcon from '../../assets/close-icon.svg';
 import React, {useRef, useCallback, useState } from 'react';
 import debounce from 'lodash.debounce'
 import { useDispatch } from 'react-redux';
-import { setSearchValue } from '../../redux/slices/filterSlice';
+import { setSearchValue } from '../../redux/slices/filterSlice.ts';
 
 const Search: React.FC = () => {
   const dispatch = useDispatch();
@@ -11,7 +11,8 @@ const Search: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const onClickClear = () => {
-    dispatch(setSearchValue(value));
+    dispatch(setSearchValue(''));
+    setValue('')
     inputRef.current?.focus();
   }
   
@@ -22,7 +23,7 @@ const Search: React.FC = () => {
     []
   )
 
-  const onChangeInput = (event) => {
+  const onChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
     updateSearchValue(event.target.value);
   }

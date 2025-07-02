@@ -16,8 +16,8 @@ import {
   setCategoryId,
   setCurrentPage,
   setFilters,
-} from '../redux/slices/filterSlice.js';
-import { fetchCakes, selectCakeData } from '../redux/slices/cakeSlice.js';
+} from '../redux/slices/filterSlice.ts';
+import { fetchCakes, selectCakeData } from '../redux/slices/cakeSlice.ts';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();

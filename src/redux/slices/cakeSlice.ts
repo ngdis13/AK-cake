@@ -1,9 +1,37 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import type { RootState } from '../store';
+import CartItem from '../../pages/CartItem';
 import axios from 'axios';
+
+export type CartItem = {
+  id: string;
+  title: string; 
+  category: string;
+  imageUrl: string; 
+  types: string;
+  price: number;
+}
+
+interface CakeSliceState {
+  items: CartItem[];
+  status: 'loading' | 'success' | 'error';
+}
+
+const initialState: CakeSliceState = {
+  items: [],
+  status: 'loading',
+};
+
+type FetchCakesArgs = {
+  categoryId: number;
+  sortType: string; 
+  searchValue: string; 
+  currentPage: number;
+}
 
 export const fetchCakes = createAsyncThunk(
   'cakes/fetchCakesStatus',
-  async ({categoryId, sortType, searchValue, currentPage}) => {
+  async ({categoryId, sortType, searchValue, currentPage}: FetchCakesArgs) => {
     const category = categoryId > 0 ? `categoryID=${categoryId}&` : '';
     const sortBy = sortType.replace('-', '');
     const order = sortType.includes('-') ? 'asc' : 'desc';
@@ -17,20 +45,15 @@ export const fetchCakes = createAsyncThunk(
       console.error('API returned data that is not an array:', response.data);
       return [];
     }
-    return response.data;
+    return response.data as CartItem[];
   }
 )
-
-const initialState = {
-  items: [],
-  status: 'loading', //loading || success || error
-};
 
 const cakesSlice = createSlice({
   name: 'cake',
   initialState,
   reducers: {
-    setItems(state, action) {
+    setItems(state, action: PayloadAction<CartItem>) {
         state.items = action.payload;
     }
 
@@ -45,7 +68,7 @@ const cakesSlice = createSlice({
         state.items = action.payload;
         state.status = 'success';
       })
-      .addCase(fetchCakes.rejected, (state, action) => {
+      .addCase(fetchCakes.rejected, (state) => {
         state.status = 'error';
         state.items = [];
       });
@@ -53,7 +76,7 @@ const cakesSlice = createSlice({
 });
 
 
-export const selectCakeData = (state) => state.cake;
+export const selectCakeData = (state: RootState) => state.cake;
 
 export const { setItems } = cakesSlice.actions;
 

@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectSort, setSort } from '../redux/slices/filterSlice';
+import { selectSort, setSort } from '../redux/slices/filterSlice.ts';
 
 type SortItem = {
   name: string;
   sortProperty: string;
 };
+
 
 
 export const list: SortItem[] = [
@@ -40,8 +41,8 @@ function Sort() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const handleClickOutside = (event: any) => {
-      if (sortRef.current && !sortRef.current.contains(event.target)){
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sortRef.current && !sortRef.current.contains(event.target as Node)){
         setOpen(false);
       }
     }
@@ -51,7 +52,7 @@ function Sort() {
     }
   }, []);
 
-  const onClickSortItem = (index) => {
+  const onClickSortItem = (index: number) => {
     dispatch(setSort(list[index]));
     // onClickSort(list[index]);
     setOpen(false);
