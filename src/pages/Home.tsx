@@ -1,9 +1,9 @@
 import React from 'react';
 import qs from 'qs';
 
-import { useEffect, useState, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../redux/store.ts';
 
 import Sort, { list } from '../components/Sort.js';
@@ -77,7 +77,7 @@ const Home: React.FC = () => {
     isMounted.current = true;
   }, [categoryId, sortType, currentPage]);
 
-  const cakes = items.map((obj) => <Link key={obj.id} to={`/cake/${obj.id}`}><CakeBlock {...obj} /></Link>);
+  const cakes = items.map((obj) => <CakeBlock {...obj} />);
   const skeletons = [...new Array(8)].map((_, index) => (
     <Skeleton key={index} />
   ));

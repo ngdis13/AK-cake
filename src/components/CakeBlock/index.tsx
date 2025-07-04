@@ -2,24 +2,32 @@ import { useEffect, useState } from 'react';
 import typesOfCategory from '../../assets/types.json';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { addItem,  selectCartItemById } from '../../redux/slices/cartSlice.ts';
+import { addItem, selectCartItemById } from '../../redux/slices/cartSlice.ts';
 import type { CartItem } from '../../redux/slices/cakeSlice.ts';
+import { Link } from 'react-router-dom';
 
 type CakeBlockProps = {
   id: string;
-  title: string; 
+  title: string;
   category: string;
-  imageUrl: string; 
-  types: string;
+  imageUrl: string;
+  types?: string;
   price: number;
-}
+};
 
-
-const CakeBlock: React.FC<CakeBlockProps>= ({ id, title, category, imageUrl, types, price }) => {
+const CakeBlock: React.FC<CakeBlockProps> = ({
+  id,
+  title,
+  category,
+  imageUrl,
+  price,
+}) => {
   const dispatch = useDispatch();
   const cartItem = useSelector(selectCartItemById(id));
-  const [activeType, setActiveType] = useState(0);
+  const [activeType, setActiveType] = useState<number>(0);
   const [allTypesData, setAllTypesData] = useState(null);
+
+  const availableTypes = allTypesData?.[0]?.[category] || [];
 
   const addedCount = cartItem ? cartItem.count : 0;
 
@@ -45,12 +53,12 @@ const CakeBlock: React.FC<CakeBlockProps>= ({ id, title, category, imageUrl, typ
       });
   }, []);
 
-  const availableTypes = allTypesData?.[0]?.[category] || [];
-
   return (
     <div className="cake-block">
-      <img className="cake-block__image" src={imageUrl} alt={title} />
-      <h4 className="cake-block__title">{title}</h4>
+      <Link key={id} to={`/cake/${id}`}>
+        <img className="cake-block__image" src={imageUrl} alt={title} />
+        <h4 className="cake-block__title">{title}</h4>
+      </Link>
       <div className="cake-block__selector">
         <ul>
           {availableTypes.map((typeName, index) => (
@@ -88,6 +96,6 @@ const CakeBlock: React.FC<CakeBlockProps>= ({ id, title, category, imageUrl, typ
       </div>
     </div>
   );
-}
+};
 
 export default CakeBlock;
