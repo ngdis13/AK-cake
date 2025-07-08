@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import qs from 'qs';
 
 import { useEffect, useRef } from 'react';
@@ -6,11 +6,10 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../redux/store.ts';
 
-import Sort, { list } from '../components/Sort.js';
-import Categories from '../components/Categories.js';
-import CakeBlock from '../components/CakeBlock/index.js';
-import Skeleton from '../components/CakeBlock/Skeleton.js';
-import Pagination from '../components/Pagination/index.js';
+import {list} from  '../components/Sort.tsx';
+import {CakeBlock, Skeleton, Pagination, Categories, Sort} from '../components'
+
+
 import {
   selectFilter,
   setCategoryId,
@@ -18,6 +17,9 @@ import {
   setFilters,
 } from '../redux/slices/filterSlice.ts';
 import { fetchCakes, selectCakeData } from '../redux/slices/cakeSlice.ts';
+
+import type { FilterSliceState } from '../redux/slices/filterSlice.ts';
+
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -32,9 +34,11 @@ const Home: React.FC = () => {
   const sortType = sort.sortProperty;
   const { items, status } = useSelector(selectCakeData);
 
-  const onClickCategory = (id: number) => {
-    dispatch(setCategoryId(id));
-  };
+  const onClickCategory = useCallback(
+    (id: number) => {
+      dispatch(setCategoryId(id));
+    }, []
+  );
 
   const onChangePage = (page: number) => {
     dispatch(setCurrentPage(page));
@@ -43,14 +47,20 @@ const Home: React.FC = () => {
   //Если был первый рендер, то проверяем URL параметры и сохраняем в редуксе
   useEffect(() => {
     if (window.location.search) {
-      const params = qs.parse(window.location.search.substring(1) as unknown);
+      const params = qs.parse(window.location.search.substring(1));
       const sort = list.find((obj) => obj.sortProperty === params.sortProperty);
-      if (sort) {
-        dispatch(setFilters({ ...params, sort }));
-        isSearch.current = true;
-      } else {
-        console.warn('Invalid sort property:', params.sortProperty);
-      }
+
+      const searchValue = typeof params.searchValue === 'string' ? params.searchValue : '';
+
+      const filters: FilterSliceState = {
+        searchValue,
+        categoryId: Number(params.categoryId) || 0,
+        currentPage: Number(params.currentPage) || 1,
+        sort: sort || list[0], 
+      };
+
+      dispatch(setFilters(filters));
+      isSearch.current = true;
     }
   }, [dispatch]);
 
@@ -77,7 +87,7 @@ const Home: React.FC = () => {
     isMounted.current = true;
   }, [categoryId, sortType, currentPage]);
 
-  const cakes = items.map((obj) => <CakeBlock {...obj} />);
+  const cakes = items.map((obj) => <CakeBlock key={obj.id} {...obj} />);
   const skeletons = [...new Array(8)].map((_, index) => (
     <Skeleton key={index} />
   ));
@@ -86,7 +96,7 @@ const Home: React.FC = () => {
     <div className="container">
       <div className="content__top">
         <Categories categoryId={categoryId} onClickCategory={onClickCategory} />
-        <Sort />
+        <Sort value={sort} />
       </div>
       <h2 className="content__title">Все торты</h2>
       {status === 'error' ? (

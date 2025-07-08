@@ -1,10 +1,17 @@
 import { useEffect, useState } from 'react';
-import typesOfCategory from '../../assets/types.json';
 import { useDispatch, useSelector } from 'react-redux';
-
-import { addItem, selectCartItemById } from '../../redux/slices/cartSlice.ts';
-import type { CartItem } from '../../redux/slices/cakeSlice.ts';
+import { addItem, selectCartItemById } from '../../redux/slices/cartSlice';
+import type { CartItem } from '../../redux/slices/cakeSlice';
 import { Link } from 'react-router-dom';
+
+// Типизация данных из API
+interface TypesData {
+  [key: string]: string[];
+}
+
+interface ApiResponse {
+  [index: number]: TypesData;
+}
 
 type CakeBlockProps = {
   id: string;
@@ -15,7 +22,7 @@ type CakeBlockProps = {
   price: number;
 };
 
-const CakeBlock: React.FC<CakeBlockProps> = ({
+export const CakeBlock: React.FC<CakeBlockProps> = ({
   id,
   title,
   category,
@@ -25,22 +32,32 @@ const CakeBlock: React.FC<CakeBlockProps> = ({
   const dispatch = useDispatch();
   const cartItem = useSelector(selectCartItemById(id));
   const [activeType, setActiveType] = useState<number>(0);
-  const [allTypesData, setAllTypesData] = useState(null);
+  const [allTypesData, setAllTypesData] = useState<ApiResponse | null>(null);
 
-  const availableTypes = allTypesData?.[0]?.[category] || [];
+  const availableTypes: string[] = allTypesData?.[0]?.[category] ?? [];
 
   const addedCount = cartItem ? cartItem.count : 0;
 
   const onClickAdd = () => {
-    const item: CartItem = {
-      id,
-      title,
-      price,
-      imageUrl,
-      type: typesOfCategory[activeType],
-      count: 0,
-    };
-    dispatch(addItem(item));
+    if (activeType >= 0 && activeType < availableTypes.length) {
+      const selectedType = availableTypes[activeType] ?? availableTypes[0] ?? "default";
+      if (selectedType) {
+        const item: CartItem = {
+          id,
+          title,
+          price,
+          imageUrl,
+          types: selectedType,
+          category,
+          count: 0,
+        };
+        dispatch(addItem(item));
+      } else {
+        console.error("Selected type is undefined");
+      }
+    } else {
+      console.error("Invalid activeType index");
+    }
   };
 
   useEffect(() => {
@@ -77,6 +94,7 @@ const CakeBlock: React.FC<CakeBlockProps> = ({
         <button
           className="button button--outline button--add"
           onClick={onClickAdd}
+          disabled={availableTypes.length === 0}
         >
           <svg
             width="12"
@@ -98,4 +116,3 @@ const CakeBlock: React.FC<CakeBlockProps> = ({
   );
 };
 
-export default CakeBlock;

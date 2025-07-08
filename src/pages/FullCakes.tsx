@@ -1,55 +1,82 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import typesOfCategory from '../assets/types.json';
-import { addItem, selectCartItemById } from '../redux/slices/cartSlice.ts';
+import { addItem, selectCartItemById } from '../redux/slices/cartSlice';
+import type { CartItem } from '../redux/slices/cartSlice';
+import NotFound from './NotFound';
 
 const FullCakes: React.FC = () => {
-    const [cake, setCake] = useState<{
-      imageUrl: string;
-      title: string;
-      price: number;
-    }>();
-    const [activeType, setActiveType] = useState(0);
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-  
-    const cartItem = useSelector(selectCartItemById(id));
-    const addedCount = cartItem?.count || 0;
-
-  const onClickAdd = () => {
-    if (!cake) return;
-    const item = {
-      id,
-      title: cake.title,
-      price: cake.price,
-      imageUrl: cake.imageUrl,
-      type: cake.typesOfCategory ? cake.typesOfCategory[activeType] : '',
-    };
-    dispatch(addItem(item));
-  };
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [cake, setCake] = useState<{
+    imageUrl: string;
+    title: string;
+    price: number;
+    typesOfCategory: string[]; // Изменено на string[] | undefined
+    category: string;
+    description?: string;
+    compound?: string;
+  }>();
+  const [activeType, setActiveType] = useState<number>(0);
+  const cartItem = id ? useSelector(selectCartItemById(id)) : null;
+  const addedCount = cartItem?.count || 0;
 
   useEffect(() => {
     async function fetchCakes() {
+      if (!id) {
+        alert('ID десерта не указан');
+        navigate('/');
+        return;
+      }
       try {
         const { data } = await axios.get(
-          'https://6836b7ad664e72d28e41cd1f.mockapi.io/Items/' + id
+          `https://6836b7ad664e72d28e41cd1f.mockapi.io/Items/${id}`
         );
-        setCake(data);
+        // Устанавливаем typesOfCategory как пустой массив, если оно undefined
+        setCake({
+          ...data,
+          typesOfCategory: data.typesOfCategory ?? [],
+        });
       } catch (error) {
+        console.error('Ошибка при получении десерта:', error);
         alert('Ошибка при получении десерта');
         navigate('/');
       }
     }
 
     fetchCakes();
-  }, []);
+  }, [id, navigate]);
+
+  useEffect(() => {
+    setActiveType(0); // Сбрасываем activeType при изменении cake
+  }, [cake]);
+
+  const onClickAdd = () => {
+    if (!cake || !id) return;
+    const selectedType = cake.typesOfCategory[activeType] || cake.typesOfCategory[0] || '';
+    const item: CartItem = {
+      id,
+      title: cake.title,
+      price: cake.price,
+      imageUrl: cake.imageUrl,
+      types: selectedType,
+      category: cake.category,
+      count: 0,
+    };
+    dispatch(addItem(item));
+  };
+
+  if (!id) {
+    return <NotFound />;
+  }
 
   if (!cake) {
-    return 'Loading';
+    return <div>Loading...</div>;
   }
+
   return (
     <div className="container">
       <div className="cake-content">
@@ -58,14 +85,36 @@ const FullCakes: React.FC = () => {
         </div>
         <div className="cake-content__info-block">
           <h2 className="info-block__cake-name">{cake.title}</h2>
-          <p className="info-block__cake-description">{cake.description}</p>
-          <p className="info-block__cake-compound">Состав: {cake.compound}</p>
+          {cake.description && (
+            <p className="info-block__cake-description">{cake.description}</p>
+          )}
+          {cake.compound && (
+            <p className="info-block__cake-compound">Состав: {cake.compound}</p>
+          )}
         </div>
-
+        <div className="cake-content__selector">
+          {cake.typesOfCategory.length > 0 ? (
+            <ul>
+              {cake.typesOfCategory.map((typeName, index) => (
+                <li
+                  key={index}
+                  className={activeType === index ? 'active' : ''}
+                  onClick={() => setActiveType(index)}
+                >
+                  {typeName}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            // <p>Варианты отсутствуют</p>
+            <p></p>
+          )}
+        </div>
         <div className="cake-content__added-block">
           <button
             className="button button--outline button--add added-block__cake-added"
             onClick={onClickAdd}
+            disabled={cake.typesOfCategory.length === 0}
           >
             <svg
               width="12"
@@ -90,3 +139,4 @@ const FullCakes: React.FC = () => {
 };
 
 export default FullCakes;
+
